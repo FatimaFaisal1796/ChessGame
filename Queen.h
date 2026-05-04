@@ -1,0 +1,14 @@
+#ifndef QUEEN_H
+#define QUEEN_H	
+#include "Piece.h"
+
+class Queen : public Piece
+{
+public:
+	Queen(char c);
+
+	bool isValidMove(int x1, int y1, int x2, int y2);
+	char getSymbol();
+};
+
+#endif 
