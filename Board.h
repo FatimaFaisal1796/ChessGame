@@ -9,7 +9,8 @@ protected:
 public:
     Board();
     void display();
-    bool movePiece(int sx, int sy, int ex, int ey);
-    bool isPathClear(int sx, int sy, int ex, int ey);
+    bool movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn);
+    bool isKingInCheck(bool isWhite);
+    char* getPiece(int x, int y) { return &board[x][y]; }
 };
 #endif
