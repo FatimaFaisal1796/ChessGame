@@ -1,5 +1,13 @@
 #include <iostream>
+#include<cmath>
 #include "board.h"
+#include "piece.h"
+#include "pawn.h"
+#include "rook.h"
+#include "knight.h"
+#include "bishop.h"
+#include "queen.h"
+#include "king.h"
 using namespace std;
 Board::Board()
 {
@@ -49,7 +57,7 @@ void Board::display()
     }
 }
 
-bool Board::movePiece(int sx, int sy, int ex, int ey)
+bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
 {
     if (sx < 0 || sx >= 8 || sy < 0 || sy >= 8 ||
         ex < 0 || ex >= 8 || ey < 0 || ey >= 8) {
@@ -58,6 +66,76 @@ bool Board::movePiece(int sx, int sy, int ex, int ey)
 
     char piece = board[sx][sy];
   
+    if (piece == '.')
+    {
+        return false;
+    }
+
+    if (isWhiteTurn && piece >= 'a' && piece <= 'z')
+    {
+        return false;
+    }
+
+    if (!isWhiteTurn && piece >= 'A' && piece <= 'Z')
+    {
+        return false;
+    }
+
+    char destination = board[ex][ey];
+
+    if ((piece >= 'A' && piece <= 'Z' &&
+        destination >= 'A' && destination <= 'Z') ||
+
+        (piece >= 'a' && piece <= 'z' &&
+            destination >= 'a' && destination <= 'z'))
+    {
+        return false;
+    }
+
+    if (piece == 'P')
+    {
+        if (ex == sx - 1 && ey == sy && board[ex][ey] == '.')
+        {
+        }
+
+        else if (sx == 6 && ex == 4 && ey == sy &&
+            board[5][sy] == '.' &&
+            board[4][sy] == '.')
+        {
+        }
+
+        else if (ex == sx - 1 && abs(ey - sy) == 1 && (board[ex][ey] >= 'a' && board[ex][ey] <= 'z'))
+        {
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+    if (piece == 'p')
+    {
+
+        if (ex == sx + 1 && ey == sy && board[ex][ey] == '.')
+        {
+        }
+
+        else if (sx == 1 && ex == 3 && ey == sy &&
+            board[2][sy] == '.' &&
+            board[3][sy] == '.')
+        {
+        }
+
+        else if (ex == sx + 1 && abs(ey - sy) == 1 && (board[ex][ey] >= 'A' && board[ex][ey] <= 'Z'))
+        {
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+
     if (piece == 'R' || piece == 'r')
     {
         if (!(sx == ex || sy == ey))
@@ -117,10 +195,8 @@ bool Board::movePiece(int sx, int sy, int ex, int ey)
         }
     }
 
-
     if (piece == 'Q' || piece == 'q')
     {
-        // rook-like move
         if (sx == ex || sy == ey)
         {
             if (sx == ex)
@@ -176,25 +252,23 @@ bool Board::movePiece(int sx, int sy, int ex, int ey)
         }
     }
 
-    if (piece == 'P')
+    if (piece == 'N' || piece == 'n')
     {
-        if (ex == sx - 1 && ey == sy)
+        int dx = abs(ex - sx);
+        int dy = abs(ey - sy);
+
+        if (!((dx == 2 && dy == 1) ||
+            (dx == 1 && dy == 2)))
         {
-            if (board[ex][ey] != '.')
-            {
-                return false;
-            }
+            return false;
         }
     }
 
-    if (piece == 'p')
+    if (piece == 'K' || piece == 'k')
     {
-        if (ex == sx + 1 && ey == sy)
+        if (abs(ex - sx) > 1 || abs(ey - sy) > 1)
         {
-            if (board[ex][ey] != '.')
-            {
-                return false;
-            }
+            return false;
         }
     }
 
