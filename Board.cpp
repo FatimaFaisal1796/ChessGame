@@ -1,5 +1,3 @@
-#include <iostream>
-#include<cmath>
 #include "board.h"
 #include "piece.h"
 #include "pawn.h"
@@ -8,7 +6,12 @@
 #include "bishop.h"
 #include "queen.h"
 #include "king.h"
+
+#include <iostream>
+#include<cmath>
+#include<stdexcept>
 using namespace std;
+
 Board::Board()
 {
     for (int i = 0; i < 8; i++)
@@ -18,6 +21,7 @@ Board::Board()
             board[i][j] = '.';
         }
     }
+
     board[0][0] = 'r';
     board[0][7] = 'r';
     board[0][1] = 'n';
@@ -26,10 +30,12 @@ Board::Board()
     board[0][5] = 'b';
     board[0][3] = 'q';
     board[0][4] = 'k';
+
     for (int i = 0; i < 8; i++) 
     {
         board[1][i] = 'p';
     }
+
     board[7][0] = 'R';
     board[7][7] = 'R';
     board[7][1] = 'N';
@@ -38,16 +44,19 @@ Board::Board()
     board[7][5] = 'B';
     board[7][3] = 'Q';
     board[7][4] = 'K';
+
     for (int i = 0; i < 8; i++)
     {
         board[6][i] = 'P';
     }
 }
+
 void Board::display()
 {
     cout << "  0 1 2 3 4 5 6 7\n";
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) 
+    {
         cout << i << " ";
         for (int j = 0; j < 8; j++)
         {
@@ -57,39 +66,40 @@ void Board::display()
     }
 }
 
-bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
+void Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
 {
-    if (sx < 0 || sx >= 8 || sy < 0 || sy >= 8 ||
-        ex < 0 || ex >= 8 || ey < 0 || ey >= 8) {
-        return false;
+    if (sx == ex && sy == ey)
+    {
+        throw logic_error("The source and destination cant be same");
+    }
+
+    if (sx < 0 || sx >= 8 || sy < 0 || sy >= 8 || ex < 0 || ex >= 8 || ey < 0 || ey >= 8)
+    {
+        throw out_of_range("The given coordinates are outside the board");
     }
 
     char piece = board[sx][sy];
   
     if (piece == '.')
     {
-        return false;
+        throw runtime_error("There is no piece at selected position");
     }
 
     if (isWhiteTurn && piece >= 'a' && piece <= 'z')
     {
-        return false;
+        throw runtime_error("White cannot move blacks piece");
     }
 
     if (!isWhiteTurn && piece >= 'A' && piece <= 'Z')
     {
-        return false;
+        throw runtime_error("Black cannot move whites piece!");
     }
 
     char destination = board[ex][ey];
 
-    if ((piece >= 'A' && piece <= 'Z' &&
-        destination >= 'A' && destination <= 'Z') ||
-
-        (piece >= 'a' && piece <= 'z' &&
-            destination >= 'a' && destination <= 'z'))
+    if ((piece >= 'A' && piece <= 'Z' && destination >= 'A' && destination <= 'Z') || (piece >= 'a' && piece <= 'z' && destination >= 'a' && destination <= 'z'))
     {
-        return false;
+        throw logic_error("You cannot capture your own piece");
     }
 
     if (piece == 'P')
@@ -98,9 +108,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
         {
         }
 
-        else if (sx == 6 && ex == 4 && ey == sy &&
-            board[5][sy] == '.' &&
-            board[4][sy] == '.')
+        else if (sx == 6 && ex == 4 && ey == sy && board[5][sy] == '.' && board[4][sy] == '.')
         {
         }
 
@@ -110,7 +118,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
 
         else
         {
-            return false;
+            throw invalid_argument("Invalid pawn move");
         }
     }
     if (piece == 'p')
@@ -120,9 +128,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
         {
         }
 
-        else if (sx == 1 && ex == 3 && ey == sy &&
-            board[2][sy] == '.' &&
-            board[3][sy] == '.')
+        else if (sx == 1 && ex == 3 && ey == sy && board[2][sy] == '.' && board[3][sy] == '.')
         {
         }
 
@@ -132,7 +138,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
 
         else
         {
-            return false;
+            throw invalid_argument("Invalid pawn move");
         }
     }
 
@@ -140,7 +146,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
     {
         if (!(sx == ex || sy == ey))
         {
-            return false;
+            throw invalid_argument("Invalid rook move");
         }
 
         if (sx == ex)
@@ -151,7 +157,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
             {
                 if (board[sx][y] != '.')
                 {
-                    return false;
+                    throw invalid_argument("Invalid rook move");
                 }
             }
         }
@@ -164,7 +170,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
             {
                 if (board[x][sy] != '.')
                 {
-                    return false;
+                    throw invalid_argument("Invalid rook move");
                 }
             }
         }
@@ -174,7 +180,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
     {
         if (abs(ex - sx) != abs(ey - sy))
         {
-            return false;
+            throw invalid_argument("Invalid bishop move");
         }
 
         int stepx = (ex > sx) ? 1 : -1;
@@ -187,7 +193,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
         {
             if (board[x][y] != '.')
             {
-                return false;
+                throw invalid_argument("Invalid bishop move");
             }
 
             x += stepx;
@@ -207,7 +213,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
                 {
                     if (board[sx][y] != '.')
                     {
-                        return false;
+                        throw invalid_argument("Invalid queen move");
                     }
                 }
             }
@@ -220,7 +226,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
                 {
                     if (board[x][sy] != '.')
                     {
-                        return false;
+                        throw invalid_argument("Invalid queen move");
                     }
                 }
             }
@@ -238,7 +244,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
             {
                 if (board[x][y] != '.')
                 {
-                    return false;
+                    throw invalid_argument("Invalid queen move!");
                 }
 
                 x += stepx;
@@ -248,7 +254,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
 
         else
         {
-            return false;
+            throw invalid_argument("Invalid queen move!");
         }
     }
 
@@ -260,7 +266,7 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
         if (!((dx == 2 && dy == 1) ||
             (dx == 1 && dy == 2)))
         {
-            return false;
+            throw invalid_argument("Invalid knight move!");
         }
     }
 
@@ -268,12 +274,15 @@ bool Board::movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn)
     {
         if (abs(ex - sx) > 1 || abs(ey - sy) > 1)
         {
-            return false;
+            throw invalid_argument("Invalid King move!");
         }
+    }
+
+    if (board[ex][ey] == 'K' || board[ex][ey] == 'k')
+    {
+        throw runtime_error("King cannot be captured!");
     }
 
     board[ex][ey] = board[sx][sy];
     board[sx][sy] = '.';
-
-    return true;
 }
