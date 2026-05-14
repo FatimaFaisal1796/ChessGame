@@ -1,5 +1,7 @@
 #include "game.h"
 #include <iostream>
+#include<stdexcept>
+
 using namespace std;
 Game::Game()
 {
@@ -13,27 +15,40 @@ void Game::start()
 
         if (isWhiteTurn)
         {
-           cout << "White's turn\n";
+           cout << "\nWhite's turn\n";
         }
         else
         {
-           cout << "Black's turn\n";
+           cout << "\nBlack's turn\n";
         }
 
         int sx, sy, ex, ey;
+
         cin >> sx >> sy >> ex >> ey;
 
-        if (board.movePiece(sx, sy, ex, ey, isWhiteTurn))
+        if (cin.fail())
         {
+            cin.clear();
+
+            cin.ignore(1000, '\n');
+
+            throw invalid_argument("Please enter integers only");
+        }
+
+        try
+        {
+            board.movePiece(sx, sy, ex, ey, isWhiteTurn);
+
             switchTurn();
         }
-        else {
-           cout << "Invalid move!\n";
+        catch (exception& e)
+        {
+            cout << "Error: " << e.what() << endl;
         }
     }
 }
 
-void Game::switchTurn()
+void Game::switchTurn() 
 {
     isWhiteTurn = !isWhiteTurn;
 }
