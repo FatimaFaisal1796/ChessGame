@@ -4,13 +4,17 @@
 class Board
 {
 protected:
-    char board[8][8];
 
+    char board[8][8];
 public:
+
     Board();
     void display();
-    bool movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn);
+    void movePiece(int sx, int sy, int ex, int ey, bool isWhiteTurn);
     bool isKingInCheck(bool isWhite);
-    char* getPiece(int x, int y) { return &board[x][y]; }
+    char* getPiece(int x, int y) 
+    { 
+        return &board[x][y]; 
+    }
 };
 #endif
